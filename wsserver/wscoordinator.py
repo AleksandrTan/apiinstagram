@@ -38,23 +38,28 @@ class WSServer:
 
     def ws_server(self, connection):
         while True:
-            data = connection.recv(1024)
+            try:
+                data = connection.recv(1024)
 
-            if data == b'ping':
-                connection.sendall(bytes(json.dumps(self.pong), encoding="utf-8"))
-                continue
+                if data == b'ping':
+                    connection.sendall(bytes(json.dumps(self.pong), encoding="utf-8"))
+                    continue
 
-            if data == b"start":
-                connection.sendall(bytes(json.dumps(self.start), encoding="utf-8"))
-                continue
+                if data == b"start":
+                    connection.sendall(bytes(json.dumps(self.start), encoding="utf-8"))
+                    continue
 
-            if data == b"stop":
-                connection.sendall(bytes(json.dumps(self.stop), encoding="utf-8"))
-                continue
+                if data == b"stop":
+                    connection.sendall(bytes(json.dumps(self.stop), encoding="utf-8"))
+                    continue
 
-            else:
-                connection.sendall(bytes(json.dumps(self.cont), encoding="utf-8"))
-                continue
+                else:
+                    connection.sendall(bytes(json.dumps(self.cont), encoding="utf-8"))
+                    continue
+            except BrokenPipeError as BPE:
+                print("Client disconected!!!")
+
+                return False
 
 
 if __name__ == "__main__":
