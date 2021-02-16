@@ -14,12 +14,13 @@ class SuccessfulLogin(APIView):
         :param request: dict
         :return: json
         """
+        print(request.headers)
         data_response = dict()
         data_response["status"] = "ok"
         data_response["email"] = request.data.get("email", False)
         data_response["password"] = request.data.get("password", False)
 
-        return Response(data_response)
+        return Response(data_response, headers={'Cache-Control': 'no-cache'})
 
 
 class FailLogin(APIView):
