@@ -1,6 +1,7 @@
 #! /usr/bin/env python
 
 import socket
+import json
 
 
 def client_fbi():
@@ -15,7 +16,12 @@ def client_fbi():
                 s.close()
                 return None
             s.sendall(data.encode())
-            print(str(s.recv(4096), 'utf-8'))
+
+            info = s.recv(4096).decode()
+            print(info)
+            d = json.loads(info)
+            print(d)
+            continue
 
 
 client_fbi()
