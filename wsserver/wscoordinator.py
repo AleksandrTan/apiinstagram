@@ -12,7 +12,7 @@ class WSServer:
         self.port = 8001
         self.main_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.main_socket.bind((self.host, self.port))
-        self.main_socket.listen(5)
+        self.main_socket.listen()
 
         self.start = {"mail": "test@mail.com", "password": "1234567", "bot_id": 1,
                       "params": {},

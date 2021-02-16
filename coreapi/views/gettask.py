@@ -1,5 +1,5 @@
 """
-Request data about tasks
+Request data about tasks for bot
 """
 
 from rest_framework.views import APIView
