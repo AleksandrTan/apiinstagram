@@ -18,9 +18,8 @@ def client_fbi():
             s.sendall(data.encode())
 
             info = s.recv(4096).decode()
-            print(info)
-            d = json.loads(info)
-            print(d)
+            data_server = json.loads(info)
+            print(data_server)
             continue
 
 

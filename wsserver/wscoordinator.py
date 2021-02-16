@@ -2,49 +2,61 @@
 
 import socket
 import json
-
-start = {"mail": "test@mail.com", "password": "1234567", "bot_id": 1,
-         "params": {},
-         "proxy":
-             {"host": "localhost", "port": 8085}
-         }
-
-stop = {"bot_id": 1}
-
-pong = {"pong": "ok"}
+import _thread as thread
 
 
-def wsserver():
-    with socket.socket() as s:
-        host = 'localhost'
-        port = 8001
+class WSServer:
 
-        s.bind((host, port))
-        print(f'socket binded to {port}')
+    def __init__(self):
+        self.host = 'localhost'
+        self.port = 8001
+        self.main_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.main_socket.bind((self.host, self.port))
+        self.main_socket.listen(5)
 
-        s.listen()
+        self.start = {"mail": "test@mail.com", "password": "1234567", "bot_id": 1,
+                      "params": {},
+                      "proxy":
+                          {"host": "localhost", "port": 8085}
+                      }
 
-        con, addr = s.accept()
+        self.stop = {"bot_id": 1}
 
-        with con:
+        self.pong = {"pong": "ok"}
 
-            while True:
-                data = con.recv(1024)
-                print(data)
+        self.cont = {"status": "ok"}
 
-                if data == b'ping':
-                    con.sendall(bytes(json.dumps(pong), encoding="utf-8"))
-                    continue
+    def start_server(self):
+        print('Start server')
+        i = 0
+        while True:
+            connection, address = self.main_socket.accept()
+            i += 1
+            if address:
+                print('Start thread')
+                thread.start_new_thread(self.ws_server, (connection,))
 
-                if data == b"start":
-                    con.sendall(bytes(json.dumps(start), encoding="utf-8"))
-                    continue
+    def ws_server(self, connection):
+        while True:
+            data = connection.recv(1024)
 
-                if data == b"stop":
-                    con.sendall(bytes(json.dumps(stop), encoding="utf-8"))
-                    continue
+            if data == b'ping':
+                connection.sendall(bytes(json.dumps(self.pong), encoding="utf-8"))
+                continue
 
-                con.sendall(data)
+            if data == b"start":
+                connection.sendall(bytes(json.dumps(self.start), encoding="utf-8"))
+                continue
+
+            if data == b"stop":
+                connection.sendall(bytes(json.dumps(self.stop), encoding="utf-8"))
+                continue
+
+            else:
+                connection.sendall(bytes(json.dumps(self.cont), encoding="utf-8"))
+                continue
 
 
-wsserver()
+if __name__ == "__main__":
+    server = WSServer()
+    server.start_server()
